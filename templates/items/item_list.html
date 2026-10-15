@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Campus Reports — FindIt{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="page-header-text">
+        <h1 class="page-title">Campus Lost &amp; Found Portal</h1>
+        <p class="page-subtitle">A unified bulletin board connecting students, faculty, and staff with lost and found belongings across campus buildings, libraries, and common areas.</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{% url 'items:item_create' %}" class="btn btn-primary">+ Report an Item</a>
+    </div>
+</section>
+
+{% if total_count > 0 %}
+<section class="stats-bar" aria-label="Portal Statistics">
+    <div class="stat-card">
+        <span class="stat-number">{{ total_count }}</span>
+        <span class="stat-label">Total Reports</span>
+    </div>
+    <div class="stat-card stat-card-open">
+        <span class="stat-number">{{ open_count }}</span>
+        <span class="stat-label">Active / Open</span>
+    </div>
+    <div class="stat-card stat-card-returned">
+        <span class="stat-number">{{ returned_count }}</span>
+        <span class="stat-label">Returned to Owner</span>
+    </div>
+</section>
+{% endif %}
+
+<!-- Search and Filter Bar -->
+<section class="filter-section" aria-label="Search and Filter Reports">
+    <form method="get" action="{% url 'items:item_list' %}" class="filter-form">
+        <div class="filter-group search-group">
+            <label for="search-input" class="visually-hidden">Search</label>
+            <input
+                type="text"
+                id="search-input"
+                name="q"
+                value="{{ q }}"
+                placeholder="Search by title or description..."
+                class="form-input search-input"
+            >
+        </div>
+
+        <div class="filter-group">
+            <label for="type-select" class="visually-hidden">Filter by Type</label>
+            <select id="type-select" name="type" class="form-select filter-select">
+                <option value="">All Types</option>
+                {% for val, label in type_choices %}
+                    <option value="{{ val }}" {% if selected_type == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="category-select" class="visually-hidden">Filter by Category</label>
+            <select id="category-select" name="category" class="form-select filter-select">
+                <option value="">All Categories</option>
+                {% for val, label in category_choices %}
+                    <option value="{{ val }}" {% if selected_category == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="btn btn-primary btn-filter">Filter</button>
+            {% if is_filtered %}
+                <a href="{% url 'items:item_list' %}" class="btn btn-secondary btn-clear">Clear</a>
+            {% endif %}
+        </div>
+    </form>
+
+    {% if is_filtered %}
+        <div class="active-filters" aria-live="polite">
+            <span class="active-filters-label">Active Filters:</span>
+            {% if q %}
+                <span class="filter-pill">Keyword: &ldquo;{{ q }}&rdquo;</span>
+            {% endif %}
+            {% if selected_type %}
+                <span class="filter-pill">Type: {{ selected_type|title }}</span>
+            {% endif %}
+            {% if selected_category %}
+                <span class="filter-pill">Category: {{ selected_category|title }}</span>
+            {% endif %}
+            <a href="{% url 'items:item_list' %}" class="clear-all-link">Clear all</a>
+        </div>
+    {% endif %}
+</section>
+
+{% if items %}
+    <div class="listing-meta">
+        <span class="report-count">Showing <strong>{{ items|length }}</strong> report{{ items|length|pluralize }}</span>
+    </div>
+
+    <div class="card-grid">
+        {% for item in items %}
+            <article class="item-card {% if item.status == 'RETURNED' %}item-card-returned{% endif %}">
+                {% if item.image %}
+                    <div class="card-thumb">
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="thumb-img" loading="lazy">
+                    </div>
+                {% else %}
+                    <div class="card-thumb card-thumb-placeholder" aria-hidden="true">
+                        <span class="thumb-placeholder-icon">
+                            {% if item.item_type == 'LOST' %}🔍{% else %}📦{% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="card-badges">
+                        {% if item.item_type == 'LOST' %}
+                            <span class="badge badge-lost">Lost</span>
+                        {% else %}
+                            <span class="badge badge-found">Found</span>
+                        {% endif %}
+                        
+                        <span class="badge badge-category">{{ item.get_category_display }}</span>
+                        
+                        {% if item.status == 'OPEN' %}
+                            <span class="badge badge-open">Open</span>
+                        {% else %}
+                            <span class="badge badge-returned">Returned</span>
+                        {% endif %}
+                    </div>
+
+                    <h2 class="card-title">
+                        <a href="{% url 'items:item_detail' item.pk %}">{{ item.title }}</a>
+                    </h2>
+
+                    <p class="card-description">{{ item.description|truncatewords:20 }}</p>
+
+                    <div class="card-meta">
+                        <div class="meta-row">
+                            <span class="meta-label">📍 Location:</span>
+                            <span class="meta-value">{{ item.location }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">📅 Date:</span>
+                            <span class="meta-value">{{ item.date_lost_or_found|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <a href="{% url 'items:item_detail' item.pk %}" class="btn btn-outline btn-sm">View Details &rarr;</a>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    {% if is_filtered %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🔎</div>
+            <h2 class="empty-state-title">No Matching Reports</h2>
+            <p class="empty-state-text">No items matched your search and filter criteria. Try adjusting your search term or clearing the active filters.</p>
+            <div class="empty-state-actions">
+                <a href="{% url 'items:item_list' %}" class="btn btn-secondary">Clear All Filters</a>
+                <a href="{% url 'items:item_create' %}" class="btn btn-primary">+ Report an Item</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <h2 class="empty-state-title">No Reports Found</h2>
+            <p class="empty-state-text">There are currently no active lost or found item reports on campus.</p>
+            <a href="{% url 'items:item_create' %}" class="btn btn-primary">+ Submit the First Report</a>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}

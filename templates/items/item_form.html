@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Report an Item — FindIt{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-header">
+        <a href="{% url 'items:item_list' %}" class="back-link">&larr; Back to Browse Items</a>
+        <h1 class="page-title">Report a Lost or Found Item</h1>
+        <p class="page-subtitle">Fill in the details below to publish an item report for the campus community.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="item-form" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-grid">
+            <div class="form-group form-group-full {% if form.title.errors %}has-error{% endif %}">
+                <label for="{{ form.title.id_for_label }}" class="form-label">
+                    {{ form.title.label }} <span class="required-mark">*</span>
+                </label>
+                {{ form.title }}
+                {% if form.title.help_text %}
+                    <small class="form-help">{{ form.title.help_text }}</small>
+                {% endif %}
+                {% if form.title.errors %}
+                    <div class="field-errors">
+                        {% for error in form.title.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group {% if form.item_type.errors %}has-error{% endif %}">
+                <label for="{{ form.item_type.id_for_label }}" class="form-label">
+                    {{ form.item_type.label }} <span class="required-mark">*</span>
+                </label>
+                {{ form.item_type }}
+                {% if form.item_type.help_text %}
+                    <small class="form-help">{{ form.item_type.help_text }}</small>
+                {% endif %}
+                {% if form.item_type.errors %}
+                    <div class="field-errors">
+                        {% for error in form.item_type.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group {% if form.category.errors %}has-error{% endif %}">
+                <label for="{{ form.category.id_for_label }}" class="form-label">
+                    {{ form.category.label }} <span class="required-mark">*</span>
+                </label>
+                {{ form.category }}
+                {% if form.category.help_text %}
+                    <small class="form-help">{{ form.category.help_text }}</small>
+                {% endif %}
+                {% if form.category.errors %}
+                    <div class="field-errors">
+                        {% for error in form.category.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group form-group-full {% if form.location.errors %}has-error{% endif %}">
+                <label for="{{ form.location.id_for_label }}" class="form-label">
+                    {{ form.location.label }} <span class="required-mark">*</span>
+                </label>
+                {{ form.location }}
+                {% if form.location.help_text %}
+                    <small class="form-help">{{ form.location.help_text }}</small>
+                {% endif %}
+                {% if form.location.errors %}
+                    <div class="field-errors">
+                        {% for error in form.location.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group {% if form.date_lost_or_found.errors %}has-error{% endif %}">
+                <label for="{{ form.date_lost_or_found.id_for_label }}" class="form-label">
+                    {{ form.date_lost_or_found.label }} <span class="required-mark">*</span>
+                </label>
+                {{ form.date_lost_or_found }}
+                {% if form.date_lost_or_found.help_text %}
+                    <small class="form-help">{{ form.date_lost_or_found.help_text }}</small>
+                {% endif %}
+                {% if form.date_lost_or_found.errors %}
+                    <div class="field-errors">
+                        {% for error in form.date_lost_or_found.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group {% if form.contact_info.errors %}has-error{% endif %}">
+                <label for="{{ form.contact_info.id_for_label }}" class="form-label">
+                    {{ form.contact_info.label }}
+                </label>
+                {{ form.contact_info }}
+                {% if form.contact_info.help_text %}
+                    <small class="form-help">{{ form.contact_info.help_text }}</small>
+                {% endif %}
+                {% if form.contact_info.errors %}
+                    <div class="field-errors">
+                        {% for error in form.contact_info.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group form-group-full {% if form.image.errors %}has-error{% endif %}">
+                <label for="{{ form.image.id_for_label }}" class="form-label">
+                    {{ form.image.label }}
+                </label>
+                {{ form.image }}
+                {% if form.image.help_text %}
+                    <small class="form-help">{{ form.image.help_text }}</small>
+                {% endif %}
+                {% if form.image.errors %}
+                    <div class="field-errors">
+                        {% for error in form.image.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group form-group-full {% if form.description.errors %}has-error{% endif %}">
+                <label for="{{ form.description.id_for_label }}" class="form-label">
+                    {{ form.description.label }} <span class="required-mark">*</span>
+                </label>
+                {{ form.description }}
+                {% if form.description.help_text %}
+                    <small class="form-help">{{ form.description.help_text }}</small>
+                {% endif %}
+                {% if form.description.errors %}
+                    <div class="field-errors">
+                        {% for error in form.description.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Submit Report</button>
+            <a href="{% url 'items:item_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

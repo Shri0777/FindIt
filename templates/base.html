@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FindIt — Campus Lost & Found Portal">
+    <title>{% block title %}FindIt — Campus Lost & Found{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner container">
+            <a href="{% url 'items:item_list' %}" class="brand">
+                <span class="brand-icon">🔍</span>
+                <span class="brand-text">FindIt</span>
+                <span class="brand-badge">Campus Portal</span>
+            </a>
+            <nav class="nav-links" aria-label="Main Navigation">
+                <a href="{% url 'items:item_list' %}" class="nav-link">Browse Items</a>
+                <a href="{% url 'items:item_create' %}" class="btn btn-primary nav-cta">+ Report an Item</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content container">
+        {% if messages %}
+            <div class="messages-container" role="status" aria-live="polite">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">
+                        <span class="alert-text">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; {% now "Y" %} FindIt Campus Lost & Found. Simple, open, community-driven retrieval.</p>
+        </div>
+    </footer>
+</body>
+</html>

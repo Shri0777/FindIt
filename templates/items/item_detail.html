@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ item.title }} — FindIt{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+    <div class="detail-header">
+        <a href="{% url 'items:item_list' %}" class="back-link">&larr; Back to All Reports</a>
+    </div>
+
+    <article class="detail-card">
+        <div class="detail-main-header">
+            <div class="detail-badges">
+                {% if item.item_type == 'LOST' %}
+                    <span class="badge badge-lost badge-lg">Lost</span>
+                {% else %}
+                    <span class="badge badge-found badge-lg">Found</span>
+                {% endif %}
+
+                <span class="badge badge-category badge-lg">{{ item.get_category_display }}</span>
+
+                {% if item.status == 'OPEN' %}
+                    <span class="badge badge-open badge-lg">Status: Open</span>
+                {% else %}
+                    <span class="badge badge-returned badge-lg">Status: Returned</span>
+                {% endif %}
+            </div>
+
+            <h1 class="detail-title">{{ item.title }}</h1>
+            <p class="detail-timestamp">Reported on {{ item.created_at|date:"F d, Y \a\t g:i A" }}</p>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-content">
+                <section class="detail-section">
+                    <h2 class="section-title">Item Description</h2>
+                    <div class="description-content">
+                        {{ item.description|linebreaks }}
+                    </div>
+                </section>
+
+                {% if item.image %}
+                    <section class="detail-section">
+                        <h2 class="section-title">Attached Photograph</h2>
+                        <div class="detail-image-container">
+                            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="detail-image">
+                        </div>
+                    </section>
+                {% endif %}
+            </div>
+
+            <aside class="detail-sidebar">
+                <div class="sidebar-box">
+                    <h2 class="sidebar-title">Report Metadata</h2>
+                    <dl class="meta-list">
+                        <div class="meta-item">
+                            <dt class="meta-term">Report Type</dt>
+                            <dd class="meta-desc">
+                                <strong>{{ item.get_item_type_display }}</strong>
+                            </dd>
+                        </div>
+
+                        <div class="meta-item">
+                            <dt class="meta-term">Category</dt>
+                            <dd class="meta-desc">{{ item.get_category_display }}</dd>
+                        </div>
+
+                        <div class="meta-item">
+                            <dt class="meta-term">Campus Location</dt>
+                            <dd class="meta-desc">{{ item.location }}</dd>
+                        </div>
+
+                        <div class="meta-item">
+                            <dt class="meta-term">Date Lost / Found</dt>
+                            <dd class="meta-desc">{{ item.date_lost_or_found|date:"F d, Y" }}</dd>
+                        </div>
+
+                        <div class="meta-item">
+                            <dt class="meta-term">Current Status</dt>
+                            <dd class="meta-desc">
+                                {% if item.status == 'OPEN' %}
+                                    <span class="text-status-open">● Open / Active</span>
+                                {% else %}
+                                    <span class="text-status-returned">✓ Returned to Owner</span>
+                                {% endif %}
+                            </dd>
+                        </div>
+
+                        <div class="meta-item">
+                            <dt class="meta-term">Contact Information</dt>
+                            <dd class="meta-desc">
+                                {% if item.contact_info %}
+                                    <span class="contact-info-badge">{{ item.contact_info }}</span>
+                                {% else %}
+                                    <span class="text-muted">No contact info provided</span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+
+                {% if item.status == 'OPEN' %}
+                    <div class="action-box">
+                        <h3 class="action-title">Item Resolution</h3>
+                        <p class="action-text">Has this item been safely returned to its rightful owner?</p>
+                        <form method="post" action="{% url 'items:mark_returned' item.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-block">✓ Mark as Returned</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="action-box action-box-resolved">
+                        <span class="resolved-check">✓</span>
+                        <div>
+                            <strong>Item Returned</strong>
+                            <p class="action-text">This report is closed and marked as returned to its owner.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </aside>
+        </div>
+    </article>
+</div>
+{% endblock %}
